@@ -11,14 +11,22 @@ def home():
 def ask(query: str):
     results = search_duckduckgo(query)
 
-    # Simple analysis
-    analysis = []
+    # Step 1: Filter important results
+    filtered = []
     for r in results:
-        if "best" in r["title"].lower():
-            analysis.append(r["title"])
+        title = r["title"].lower()
+        if "best" in title or "top" in title:
+            filtered.append(r)
+
+    # Step 2: Generate recommendation
+    if filtered:
+        recommendation = f"Based on search results, check: {filtered[0]['title']}"
+    else:
+        recommendation = "No strong recommendation found, explore top results."
 
     return {
         "query": query,
         "results": results,
-        "analysis": analysis[:3]
+        "analysis": filtered[:3],
+        "recommendation": recommendation
     }
