@@ -1,5 +1,8 @@
 from fastapi import FastAPI
-from search import search_duckduckgo
+
+from modules.web_search import perform_search
+from modules.ai_analysis import analyze, generate_recommendation
+from modules.output_formatter import format_output
 
 app = FastAPI()
 
@@ -9,24 +12,16 @@ def home():
 
 @app.get("/ask")
 def ask(query: str):
-    results = search_duckduckgo(query)
+    # Step 1: Search
+    results = perform_search(query)
 
-    # Step 1: Filter important results
-    filtered = []
-    for r in results:
-        title = r["title"].lower()
-        if "best" in title or "top" in title:
-            filtered.append(r)
+    # Step 2: Analyze
+    analysis = analyze(results)
 
-    # Step 2: Generate recommendation
-    if filtered:
-        recommendation = f"Based on search results, check: {filtered[0]['title']}"
-    else:
-        recommendation = "No strong recommendation found, explore top results."
+    # Step 3: Recommend
+    recommendation = generate_recommendation(analysis)
 
-    return {
-        "query": query,
-        "results": results,
-        "analysis": filtered[:3],
-        "recommendation": recommendation
-    }
+    # Step 4: Format
+    output = format_output(query, results, analysis, recommendation)
+
+    return output
