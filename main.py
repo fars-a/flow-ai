@@ -1,10 +1,17 @@
 from fastapi import FastAPI
-
+from fastapi.middleware.cors import CORSMiddleware
 from modules.web_search import perform_search
 from modules.ai_analysis import analyze, generate_recommendation
 from modules.output_formatter import format_output
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.get("/")
 def home():
